@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'providers/user_provider.dart';
 import 'models/post.dart';
+import 'utils/api_utils.dart';
 
 void main() {
   runApp(
@@ -154,10 +155,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchPosts() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8080/api/post/list'),
-        headers: {
-          'Authorization': 'Bearer ${context.read<UserProvider>().accessToken}',
-        },
+        Uri.parse('${ApiUtils.baseUrl}/post/list'),
+        headers: ApiUtils.getAuthHeaders(context),
       );
 
       if (response.statusCode == 200) {
@@ -205,10 +204,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                     leading: post.imageUrl.isNotEmpty
                         ? Image.network(
-                            'http://10.0.2.2:8080/images/${post.imageUrl}',
+                            ApiUtils.getImageUrl(post.imageUrl),
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
+                            headers: ApiUtils.getAuthHeaders(context),
                           )
                         : null,
                   ),
